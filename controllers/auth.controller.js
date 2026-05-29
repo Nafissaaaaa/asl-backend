@@ -113,3 +113,16 @@ exports.forgotPassword = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.resetPassword = async (req, res) => {
+  const { email, new_password } = req.body;
+  if (!email || !new_password)
+    return res.status(400).json({ error: 'Email and new password required.' });
+
+  try {
+    const hashed = await bcrypt.hash(new_password, 10);
+    await db.query('UPDATE users SET password=$1 WHERE email=$2', [hashed, email]);
+    res.json({ message: 'Password reset successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
