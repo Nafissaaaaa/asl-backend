@@ -66,3 +66,17 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required.' });
+
+  try {
+    const result = await db.query('SELECT id FROM users WHERE email=$1', [email]);
+    if (result.rows.length === 0)
+      return res.status(404).json({ error: 'Email not found.' });
+
+    res.json({ message: 'Reset link sent.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
